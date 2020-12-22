@@ -305,7 +305,7 @@ class TaskFilter(BaseAction):
         return []
 
     @staticmethod
-    def execute_confirm(*, prompt=False, yes=False, secure=False, **kwargs):
+    def execute_confirm(*, prompt=False, yes=False, dont_skip=False, secure=False, **kwargs):
         """Executes a confirm dialouge for the user, interactively."""
 
         def abort(msg="Aborted!"):
@@ -337,8 +337,11 @@ class TaskFilter(BaseAction):
 
         # return ("confirmed", True)
 
-    def execute_skip_if(self, *, key, **kwargs):
+    def execute_skip_if(self, *, key, dont_skip=False, **kwargs):
         """Determines if it is appropriate to skip the dependent TaskScript."""
+        if dont_skip:
+            self.do_skip = False
+            return ("skip", False)
 
         # Ensure the provided file–key exists, and if it doesn't, abort mission.
         key_path = os.path.abspath(key)
@@ -362,15 +365,15 @@ class TaskFilter(BaseAction):
         self.do_skip = False
         return
 
-    def execute(self, yes=False, **kwargs):
+    def execute(self, yes=False, dont_skip=False, **kwargs):
         """This should probably be two different classes…
 
         …but I was too tired to approach that problem. I continue to be.
         """
         if self.name == "confirm":
-            self.execute_confirm(yes=yes, **self.arguments)
+            self.execute_confirm(yes=yes, dont_skip=dont_skip, **self.arguments)
         elif self.name == "skip":
-            self.execute_skip_if(yes=yes, **self.arguments)
+            self.execute_skip_if(yes=yes, dont_skip=dont_skip, **self.arguments)
         elif self.name == "interactive":
             self.do_interactive = True
 

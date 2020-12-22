@@ -41,6 +41,7 @@ def do_help(exit=0):
             "--insecure", str(click.style("--insecure", fg="red", bold=True))
         )
         help = help.replace("--yes", str(click.style("--yes", fg="red", bold=True)))
+        help = help.replace("--dont_skip", str(click.style("--dont-skip", fg="red", bold=True)))
         help = help.replace(
             "--allow", str(click.style("--allow", fg="green", bold=True))
         )
@@ -131,6 +132,7 @@ def echo_json(obj):
     help="Do not run dependent tasks.",
 )
 @click.option("--yes", is_flag=True, help="Set medium–security prompts to yes.")
+@click.option("--dont-skip", is_flag=True, help="Forces task to run even if skip key hasnt changed")
 @click.option(
     "--continue",
     "_continue",
@@ -197,6 +199,7 @@ def entrypoint(
     clear_skips,
     clear_envs,
     interactive,
+    dont_skip,
     yes,
     help,
     source,
@@ -388,6 +391,7 @@ def entrypoint(
                     )
                 usually_bash_task = task.execute(
                     yes=yes,
+                    dont_skip=dont_skip,
                     debug=debug,
                     silent=silent,
                     interactive=force_interactive or interactive,
